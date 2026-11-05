@@ -44,6 +44,13 @@ npm install 'git+https://github.com/bitcomputing/imsdk-rn.git#main' --legacy-pee
 
 仓库根目录是 Git 包入口，JS 与原生桥接代码来自 `juggleim-rnsdk/`。`DEMO/package.json` 仍使用 `file:../juggleim-rnsdk` 做本地开发。此仓库 `main` 更新后，消费方需刷新锁文件才能拿到新的 RN 包提交。
 
+如果应用同时提交 npm 和 Yarn 锁文件，在 RN SDK 改动推送到 `main` 后，于应用目录执行：
+
+```bash
+npm update juggleim-rnsdk --package-lock-only --legacy-peer-deps --ignore-scripts
+yarn upgrade juggleim-rnsdk
+```
+
 原生 SDK 来自 [bitcomputing/imsdk-ios](https://github.com/bitcomputing/imsdk-ios) 和 [bitcomputing/imsdk-android](https://github.com/bitcomputing/imsdk-android) 的 `master`。每次 Android 构建在 Gradle 配置时拉取最新 Android 源码；DEMO 每次 iOS 构建前运行 `pod install`，拉取最新 iOS 源码并更新 Pods。网络拉取失败或 SDK 目录有未提交的改动时，构建会报错。构建日志会输出实际提交号。
 
 Android 项目在 `android/settings.gradle` 中加入三个源码模块（React Native 封装本身由自动链接处理）：

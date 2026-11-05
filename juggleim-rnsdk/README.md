@@ -20,11 +20,7 @@ JuggleIM is a React Native chat and instant messaging SDK for iOS and Android. I
 
 ## Installation
 
-```bash
-npm install juggleim-rnsdk --legacy-peer-deps
-```
-
-This source switch is currently in this checkout. Until a new npm release, install the package from this checkout; `DEMO/package.json` already uses `file:../juggleim-rnsdk`.
+This directory is used as a local package by `DEMO/package.json` (`file:../juggleim-rnsdk`). For another app, install the repository's `main` directly from Git and use the native paths in the [root installation guide](../README.md#installation). The paths below apply to the local `file:` package.
 
 This package fetches the latest `master` source from [bitcomputing/imsdk-ios](https://github.com/bitcomputing/imsdk-ios) and [bitcomputing/imsdk-android](https://github.com/bitcomputing/imsdk-android) during native builds. A fetch failure or local SDK edit fails the build. Add this update step and the source modules to `android/settings.gradle`:
 

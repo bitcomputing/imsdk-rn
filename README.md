@@ -44,6 +44,13 @@ npm install 'git+https://github.com/bitcomputing/imsdk-rn.git#main' --legacy-pee
 
 The repository root is the Git package entry point; its JS and native bridge code comes from `juggleim-rnsdk/`. `DEMO/package.json` still uses `file:../juggleim-rnsdk` for local development. After updating this repository's `main`, refresh the consuming app's package lock to pick up the new RN package commit.
 
+For an app that keeps both npm and Yarn lockfiles, run these commands in the app directory after pushing an RN SDK change:
+
+```bash
+npm update juggleim-rnsdk --package-lock-only --legacy-peer-deps --ignore-scripts
+yarn upgrade juggleim-rnsdk
+```
+
 The native SDKs track `master` from [bitcomputing/imsdk-ios](https://github.com/bitcomputing/imsdk-ios) and [bitcomputing/imsdk-android](https://github.com/bitcomputing/imsdk-android). Gradle fetches Android source during each build. The DEMO Xcode scheme runs `pod install` before each iOS build to fetch the latest source and update Pods. Fetch failures or local SDK edits fail the build. Build output prints the exact commit used.
 
 For Android, include the three source modules in `android/settings.gradle` (the React Native wrapper itself is autolinked):
