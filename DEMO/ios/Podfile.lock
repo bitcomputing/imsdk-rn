@@ -9,13 +9,13 @@ PODS:
     - hermes-engine/Pre-built (= 0.82.1)
   - hermes-engine/Pre-built (0.82.1)
   - JuggleIM (1.9.1)
-  - juggleim-rnsdk (1.0.5):
-    - JuggleIM (~> 1.9.1)
-    - JZegoCall (= 1.8.25)
+  - juggleim-rnsdk (1.2.2):
+    - JuggleIM (= 1.9.1)
+    - JZegoCall (= 1.9.1)
     - React-Core
-  - JZegoCall (1.8.25):
-    - JuggleIM
-    - ZegoExpressEngine
+  - JZegoCall (1.9.1):
+    - JuggleIM (= 1.9.1)
+    - ZegoExpressEngine (= 3.22.0)
   - NitroModules (0.32.0):
     - boost
     - DoubleConversion
@@ -2629,7 +2629,7 @@ PODS:
     - Yoga
   - SocketRocket (0.7.1)
   - Yoga (0.0.0)
-  - ZegoExpressEngine (3.23.2)
+  - ZegoExpressEngine (3.22.0)
 
 DEPENDENCIES:
   - boost (from `../node_modules/react-native/third-party-podspecs/boost.podspec`)
@@ -2639,7 +2639,9 @@ DEPENDENCIES:
   - fmt (from `../node_modules/react-native/third-party-podspecs/fmt.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
+  - JuggleIM (from `../../juggleim-rnsdk`)
   - juggleim-rnsdk (from `../node_modules/juggleim-rnsdk`)
+  - JZegoCall (from `../../juggleim-rnsdk`)
   - NitroModules (from `../node_modules/react-native-nitro-modules`)
   - NitroSound (from `../node_modules/react-native-nitro-sound`)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
@@ -2719,8 +2721,6 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - JuggleIM
-    - JZegoCall
     - React-Codegen
     - SocketRocket
     - ZegoExpressEngine
@@ -2741,8 +2741,12 @@ EXTERNAL SOURCES:
   hermes-engine:
     :podspec: "../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec"
     :tag: hermes-2025-09-01-RNv0.82.0-265ef62ff3eb7289d17e366664ac0da82303e101
+  JuggleIM:
+    :path: "../../juggleim-rnsdk"
   juggleim-rnsdk:
     :path: "../node_modules/juggleim-rnsdk"
+  JZegoCall:
+    :path: "../../juggleim-rnsdk"
   NitroModules:
     :path: "../node_modules/react-native-nitro-modules"
   NitroSound:
@@ -2900,9 +2904,9 @@ SPEC CHECKSUMS:
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
   hermes-engine: 273e30e7fb618279934b0b95ffab60ecedb7acf5
-  JuggleIM: b7bc26746d63769434ba0d96624e31d37f1cc2a8
-  juggleim-rnsdk: 52639dc55ea15009e6239f9997b5afcaa61d1af3
-  JZegoCall: 2764397dcaea833788cbb7be4d8613ed3de765ad
+  JuggleIM: c8981a1fffc0a214809a573647d2699c7a144c17
+  juggleim-rnsdk: e0d111c923428f9f818e933868e5979a27bd70d4
+  JZegoCall: bad792fe604da9244a8c2549fc0ef0b588672944
   NitroModules: 1d6b00df1594151aa7be68893bf41afc261bb817
   NitroSound: 810e1a445c9301b6c0fb0c4d59cd16fc4353c6ac
   RCT-Folly: 59ec0ac1f2f39672a0c6e6cecdd39383b764646f
@@ -2978,9 +2982,9 @@ SPEC CHECKSUMS:
   RNPermissions: aac95f813b7de02e12b567c94c329fe012dfd9e6
   RNScreens: 3693ec4bbc0065151b843269e50e9807644e9918
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
-  Yoga: 689c8e04277f3ad631e60fe2a08e41d411daf8eb
-  ZegoExpressEngine: 509a20d1eceaff9dd5fb3b48ece0ccef49e85708
+  Yoga: 8e01cef9947ca77f0477a098f0b32848a8e448c6
+  ZegoExpressEngine: c1b01551fc817e6fd32b3a877a9d15de6d93f68e
 
-PODFILE CHECKSUM: 92dd5ff9fc0135814c0c10eebd91bd2d547b7efe
+PODFILE CHECKSUM: 98d5470ce0d0971888dbed5ea690b5cdf7c1813b
 
-COCOAPODS: 1.16.0
+COCOAPODS: 1.16.2

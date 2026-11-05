@@ -25,7 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) NSData *rawData;
 
 /// 为指定 contentType 动态创建并返回可注册的子类（幂等，可重复调用）。
-+ (Class)registerableClassForContentType:(NSString *)contentType;
++ (Class)registerableClassForContentType:(NSString *)contentType
+                                   flags:(JMessageFlag)flags;
 
 @end
 

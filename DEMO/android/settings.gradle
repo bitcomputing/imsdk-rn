@@ -1,5 +1,10 @@
 pluginManagement { includeBuild("../node_modules/@react-native/gradle-plugin") }
 plugins { id("com.facebook.react.settings") }
+def nativeSdkRefresh = new File(settingsDir, '../../juggleim-rnsdk/scripts/refresh-native-sdk.sh')
+def refresh = new ProcessBuilder('bash', nativeSdkRefresh.absolutePath, 'android')
+    .directory(settingsDir).redirectErrorStream(true).start()
+refresh.inputStream.eachLine { println it }
+if (refresh.waitFor() != 0) throw new GradleException('Could not update Android IM SDK from master')
 extensions.configure(com.facebook.react.ReactSettingsExtension){ ex -> ex.autolinkLibrariesFromCommand() }
 rootProject.name = 'DEMO'
 include ':app'
@@ -7,3 +12,9 @@ includeBuild('../node_modules/@react-native/gradle-plugin')
 
 include ':juggleim-rnsdk'
 project(':juggleim-rnsdk').projectDir = new File(rootProject.projectDir, '../../juggleim-rnsdk/android')
+
+['core', 'zego', 'jpush'].each { component ->
+    def moduleName = "juggle-im-${component}"
+    include ":${moduleName}"
+    project(":${moduleName}").projectDir = new File(rootProject.projectDir, "../../juggleim-rnsdk/android/native/${component}")
+}

@@ -37,6 +37,7 @@ import com.juggle.im.model.MessageOptions;
 import com.juggle.im.JIM;
 import com.juggle.im.internal.logger.JLogConfig;
 import com.juggle.im.internal.logger.JLogLevel;
+import com.juggle.im.internal.util.JLogger;
 import com.juggle.im.model.MessageContent.*;
 import com.juggle.im.model.GroupInfo;
 import com.juggle.im.model.GroupMember;
@@ -73,7 +74,7 @@ public class JuggleIMManager extends ReactContextBaseJavaModule {
     private Map<String, IMessageManager.IStreamMessageListener> streamMessageListeners = new HashMap<>();
 
     // 自定义消息类型注册表
-    private Map<String, String> customMessageTypes = new HashMap<>();
+    private Map<String, Integer> customMessageTypes = new HashMap<>();
 
     public JuggleIMManager(@Nonnull ReactApplicationContext reactContext) {
         super(reactContext);
@@ -120,7 +121,9 @@ public class JuggleIMManager extends ReactContextBaseJavaModule {
         JIM.InitConfig.Builder builder = new JIM.InitConfig.Builder();
         JLogConfig.Builder logBuilder = new JLogConfig.Builder(getReactApplicationContext());
         logBuilder.setLogConsoleLevel(JLogLevel.JLogLevelVerbose);
-        builder.setJLogConfig(new JLogConfig(logBuilder));
+        JLogConfig logConfig = new JLogConfig(logBuilder);
+        builder.setJLogConfig(logConfig);
+        JLogger.getInstance().init(logConfig);
         JIM.getInstance().init(getCurrentActivity(), appKey, builder.build());
     }
 
@@ -134,7 +137,9 @@ public class JuggleIMManager extends ReactContextBaseJavaModule {
         JIM.InitConfig.Builder builder = new JIM.InitConfig.Builder();
         JLogConfig.Builder logBuilder = new JLogConfig.Builder(getReactApplicationContext());
         logBuilder.setLogConsoleLevel(JLogLevel.JLogLevelVerbose);
-        builder.setJLogConfig(new JLogConfig(logBuilder));
+        JLogConfig logConfig = new JLogConfig(logBuilder);
+        builder.setJLogConfig(logConfig);
+        JLogger.getInstance().init(logConfig);
         if (enableJGPush) {
             // 简要描述：极光调试日志开关需在 SDK 初始化前设置，避免日志不完整。
             JConstants.CMD_TO_PRINT_ALL_LOG = true;
@@ -185,12 +190,12 @@ public class JuggleIMManager extends ReactContextBaseJavaModule {
      * @param contentType 消息类型标识符
      */
     @ReactMethod
-    public void registerCustomMessageType(String contentType) {
+    public void registerCustomMessageType(String contentType, int flag) {
         if (contentType == null || contentType.isEmpty() || contentType.startsWith("jg:")) {
             Log.e("JuggleIM", "contentType 不能以 'jg:' 开头");
             return;
         }
-        customMessageTypes.put(contentType, contentType);
+        customMessageTypes.put(contentType, flag);
         Log.d("JuggleIM", "注册自定义消息类型: " + contentType);
     }
 
@@ -810,7 +815,7 @@ public class JuggleIMManager extends ReactContextBaseJavaModule {
             default:
                 // 检查是否是自定义消息
                 if (customMessageTypes.containsKey(contentType)) {
-                    UnknownMessage msg = createUnknownMessage(map);
+                    UnknownMessage msg = createUnknownMessage(map, customMessageTypes.get(contentType));
                     msg.setMessageType(contentType);
                     return msg;
                 }
@@ -822,14 +827,14 @@ public class JuggleIMManager extends ReactContextBaseJavaModule {
     /**
      * 创建自定义消息对象
      */
-    private UnknownMessage createUnknownMessage(ReadableMap map) {
+    private UnknownMessage createUnknownMessage(ReadableMap map, int registeredFlag) {
         try {
             JSONObject jsonObject = convertReadableMapToJSON(map);
             String jsonStr = jsonObject.toString();
             UnknownMessage customMsg = new UnknownMessage();
 
-            // 从 map 中读取 flag，如果没有设置则使用默认值
-            int flag = MessageFlag.IS_SAVE.getValue() | MessageFlag.IS_COUNTABLE.getValue();
+            // 使用注册时的语义；单条消息显式传 flag 时允许覆盖。
+            int flag = registeredFlag;
             if (map.hasKey("flag") && !map.isNull("flag")) {
                 flag = (int) map.getDouble("flag");
             }

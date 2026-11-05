@@ -1,5 +1,6 @@
 
-import { NativeModules, NativeEventEmitter, findNodeHandle, Component, Platform } from 'react-native';
+import type { Component } from 'react';
+import { NativeModules, NativeEventEmitter, findNodeHandle, Platform } from 'react-native';
 import { request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import { CallStatus, CallMediaType, CallFinishReason, CallErrorCode } from './CallConst';
 import { CallMember } from './CallMember';

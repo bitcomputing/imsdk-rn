@@ -16,7 +16,7 @@ JuggleIM is a React Native chat and instant messaging SDK for iOS and Android. I
 - Unread counts, drafts, mute, pin, mentions, and conversation tags
 - One-to-one and multi-party voice/video calls
 - User/group profiles and social moments
-- React Native 0.60+, Android 21+, iOS 9+, and TypeScript declarations
+- React Native 0.60+, Android 21+, iOS 12+, and TypeScript declarations
 
 ## Installation
 
@@ -24,13 +24,20 @@ JuggleIM is a React Native chat and instant messaging SDK for iOS and Android. I
 npm install juggleim-rnsdk --legacy-peer-deps
 ```
 
-Add the JuggleIM Maven repository to Android:
+This source switch is currently in this checkout. Until a new npm release, install the package from this checkout; `DEMO/package.json` already uses `file:../juggleim-rnsdk`.
+
+This package fetches the latest `master` source from [bitcomputing/imsdk-ios](https://github.com/bitcomputing/imsdk-ios) and [bitcomputing/imsdk-android](https://github.com/bitcomputing/imsdk-android) during native builds. A fetch failure or local SDK edit fails the build. Add this update step and the source modules to `android/settings.gradle`:
 
 ```groovy
-allprojects {
-    repositories {
-        maven { url "https://repo.juggle.im/repository/maven-releases/" }
-    }
+def juggleSdk = file('../node_modules/juggleim-rnsdk/android/native')
+def refresh = new ProcessBuilder('bash', new File(juggleSdk, '../scripts/refresh-native-sdk.sh').absolutePath, 'android')
+    .directory(settingsDir).redirectErrorStream(true).start()
+refresh.inputStream.eachLine { println it }
+if (refresh.waitFor() != 0) throw new GradleException('Could not update Android IM SDK')
+['core', 'zego', 'jpush'].each { component ->
+    def moduleName = "juggle-im-${component}"
+    include ":${moduleName}"
+    project(":${moduleName}").projectDir = new File(juggleSdk, component)
 }
 ```
 
@@ -40,7 +47,19 @@ For Android voice/video calls, also add:
 maven { url "https://storage.zego.im/maven" }
 ```
 
-For iOS, run `pod install` from the `ios` directory after installing the npm package.
+For iOS, add this to the Podfile before `use_native_modules!`:
+
+```ruby
+sdk_refresh = File.expand_path('../node_modules/juggleim-rnsdk/scripts/refresh-native-sdk.sh', __dir__)
+raise 'Could not update iOS IM SDK' unless system('bash', sdk_refresh, 'ios')
+
+target 'YourApp' do
+  pod 'JuggleIM', :path => '../node_modules/juggleim-rnsdk', :modular_headers => true
+  pod 'JZegoCall', :path => '../node_modules/juggleim-rnsdk'
+end
+```
+
+Run `pod install` before each app build; in Xcode, this can be a scheme pre-action. The podspecs read the current upstream version, Git commit, and public headers at install time. The npm package omits native source snapshots; the first native build clones the Git source.
 
 ## Quick start
 

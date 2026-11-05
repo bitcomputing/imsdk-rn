@@ -13,10 +13,9 @@ export interface SurfaceViewProps extends ViewProps {
     zOrderOnTop?: boolean;
 }
 
-const ZegoSurfaceViewManager = Platform.select<React.ComponentType<SurfaceViewProps>>({
-    ios: requireNativeComponent<SurfaceViewProps>('ZegoSurfaceView'),
-    android: requireNativeComponent<SurfaceViewProps>('RCTZegoSurfaceView'),  // * android.view.SurfaceView
-})!;
+const ZegoSurfaceViewManager = Platform.OS === 'ios'
+    ? requireNativeComponent<SurfaceViewProps>('ZegoSurfaceView')
+    : requireNativeComponent<SurfaceViewProps>('RCTZegoSurfaceView'); // * android.view.SurfaceView
 
 
 export const ZegoSurfaceView = React.forwardRef<React.ComponentRef<typeof ZegoSurfaceViewManager>, SurfaceViewProps>((props, ref) => {

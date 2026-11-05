@@ -10,6 +10,8 @@ app/ios/Podfile.lock
 app/node_modules_trash
 app/android/.idea
 node_modules
+juggleim-rnsdk/native/imsdk-ios/
+juggleim-rnsdk/native/imsdk-android/
 DEMO/android/.gradle
 **/build/**
 DEMO/ios/Pods

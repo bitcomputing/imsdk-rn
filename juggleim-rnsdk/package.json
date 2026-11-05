@@ -5,23 +5,28 @@
   "main": "src/index.js",
   "types": "src/index.d.ts",
   "react-native": "src/index.js",
-  "homepage": "https://github.com/juggleim/imsdk-rn",
+  "homepage": "https://github.com/bitcomputing/imsdk-rn",
   "repository": {
     "type": "git",
-    "url": "https://github.com/juggleim/imsdk-rn.git"
+    "url": "https://github.com/bitcomputing/imsdk-rn.git"
   },
   "files": [
     "src",
     "android/src",
     "android/build.gradle",
+    "android/native/core/build.gradle",
+    "android/native/zego/build.gradle",
+    "android/native/jpush/build.gradle",
     "ios",
+    "scripts",
+    "JuggleIM.podspec",
+    "JZegoCall.podspec",
     "juggleim-rnsdk.podspec",
     "README.md"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "app": "cd app && npm start",
-    "prepare": "npm run build",
     "build": "echo \"Build completed\""
   },
   "keywords": [

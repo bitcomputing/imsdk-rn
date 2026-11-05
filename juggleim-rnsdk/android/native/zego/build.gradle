@@ -1,0 +1,27 @@
+plugins { id 'com.android.library' }
+
+def sdkModule = file('../../../native/imsdk-android/JZegoCall')
+
+android {
+    namespace 'com.j.im.jzegocall'
+    compileSdk 33
+    defaultConfig { minSdk 21 }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    sourceSets {
+        main {
+            manifest.srcFile file("${sdkModule}/src/main/AndroidManifest.xml")
+            java.srcDirs = [file("${sdkModule}/src/main/java")]
+            res.srcDirs = [file("${sdkModule}/src/main/res")]
+        }
+    }
+}
+
+dependencies {
+    api project(':juggle-im-core')
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.9.0'
+    compileOnly 'im.zego:express-video:3.21.0'
+}

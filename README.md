@@ -32,38 +32,59 @@
 | Voice and video | One-to-one and multi-party calls powered by ZEGOCLOUD |
 | Social | Moments, comments, reactions, cached timeline |
 | Profiles | User, group, and group-member information |
-| Platform | React Native 0.60+, Android 21+, iOS 9+, TypeScript definitions |
+| Platform | React Native 0.60+, Android 21+, iOS 12+, TypeScript definitions |
 
 ## Installation
 
-Install the package from npm:
+Install this repository's RN package directly from Git:
 
 ```bash
-npm install juggleim-rnsdk --legacy-peer-deps
+npm install 'git+https://github.com/bitcomputing/imsdk-rn.git#main' --legacy-peer-deps
 ```
 
-For Android, add the JuggleIM Maven repository to your project's repository configuration:
+The repository root is the Git package entry point; its JS and native bridge code comes from `juggleim-rnsdk/`. `DEMO/package.json` still uses `file:../juggleim-rnsdk` for local development. After updating this repository's `main`, refresh the consuming app's package lock to pick up the new RN package commit.
+
+The native SDKs track `master` from [bitcomputing/imsdk-ios](https://github.com/bitcomputing/imsdk-ios) and [bitcomputing/imsdk-android](https://github.com/bitcomputing/imsdk-android). Gradle fetches Android source during each build. The DEMO Xcode scheme runs `pod install` before each iOS build to fetch the latest source and update Pods. Fetch failures or local SDK edits fail the build. Build output prints the exact commit used.
+
+For Android, include the three source modules in `android/settings.gradle` (the React Native wrapper itself is autolinked):
 
 ```groovy
-allprojects {
-    repositories {
-        maven { url "https://repo.juggle.im/repository/maven-releases/" }
-    }
+def juggleSdk = new File(settingsDir, '../node_modules/juggleim-rnsdk/juggleim-rnsdk/android/native')
+def refresh = new ProcessBuilder('bash', new File(settingsDir, '../node_modules/juggleim-rnsdk/juggleim-rnsdk/scripts/refresh-native-sdk.sh').absolutePath, 'android')
+    .directory(settingsDir).redirectErrorStream(true).start()
+refresh.inputStream.eachLine { println it }
+if (refresh.waitFor() != 0) throw new GradleException('Could not update Android IM SDK')
+['core', 'zego', 'jpush'].each { component ->
+    def moduleName = "juggle-im-${component}"
+    include ":${moduleName}"
+    project(":${moduleName}").projectDir = new File(juggleSdk, component)
 }
 ```
 
-If you use the voice/video call module on Android, also add:
+The Zego call module still needs its engine repository:
 
 ```groovy
 maven { url "https://storage.zego.im/maven" }
 ```
 
-For iOS, install native dependencies after adding the package:
+For iOS, add the source podspecs to the app target in `ios/Podfile`, then install pods:
+
+```ruby
+sdk_refresh = File.expand_path('../node_modules/juggleim-rnsdk/juggleim-rnsdk/scripts/refresh-native-sdk.sh', __dir__)
+raise 'Could not update iOS IM SDK' unless system('bash', sdk_refresh, 'ios')
+
+target 'YourApp' do
+pod 'JuggleIM', :path => '../node_modules/juggleim-rnsdk/juggleim-rnsdk', :modular_headers => true
+pod 'JZegoCall', :path => '../node_modules/juggleim-rnsdk/juggleim-rnsdk'
+end
+```
 
 ```bash
 cd ios
 pod install
 ```
+
+For direct Xcode or `xcodebuild` builds, use a scheme with a pre-build `pod install` action. Other apps should run `pod install` before building so new upstream files enter the Pods project. Builds may use different commits; save the printed SDK commit for reproducibility.
 
 ## Quick start
 

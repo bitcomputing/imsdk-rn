@@ -92,7 +92,12 @@ export default class JuggleIM {
    */
   static registerCustomMessageType(
     contentType: string,
-    messageClass: CustomMessageConstructor
+    messageClass: CustomMessageConstructor,
+    options?: {
+      isCount?: boolean;
+      isStorage?: boolean;
+      isCommand?: boolean;
+    }
   ): void;
 
   /**

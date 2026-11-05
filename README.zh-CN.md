@@ -32,38 +32,58 @@
 | 音视频 | 基于 ZEGO 的单人和多人音视频通话 |
 | 社交能力 | 朋友圈、评论、点赞/回应、缓存时间线 |
 | 资料能力 | 用户、群组和群成员信息 |
-| 平台支持 | React Native 0.60+、Android 21+、iOS 9+、TypeScript 类型定义 |
+| 平台支持 | React Native 0.60+、Android 21+、iOS 12+、TypeScript 类型定义 |
 
 ## 安装
 
-通过 npm 安装：
+直接从本仓库的 Git 主分支安装 RN 包：
 
 ```bash
-npm install juggleim-rnsdk --legacy-peer-deps
+npm install 'git+https://github.com/bitcomputing/imsdk-rn.git#main' --legacy-peer-deps
 ```
 
-Android 项目需要在仓库配置中加入 JuggleIM Maven 地址：
+仓库根目录是 Git 包入口，JS 与原生桥接代码来自 `juggleim-rnsdk/`。`DEMO/package.json` 仍使用 `file:../juggleim-rnsdk` 做本地开发。此仓库 `main` 更新后，消费方需刷新锁文件才能拿到新的 RN 包提交。
+
+原生 SDK 来自 [bitcomputing/imsdk-ios](https://github.com/bitcomputing/imsdk-ios) 和 [bitcomputing/imsdk-android](https://github.com/bitcomputing/imsdk-android) 的 `master`。每次 Android 构建在 Gradle 配置时拉取最新 Android 源码；DEMO 每次 iOS 构建前运行 `pod install`，拉取最新 iOS 源码并更新 Pods。网络拉取失败或 SDK 目录有未提交的改动时，构建会报错。构建日志会输出实际提交号。
+
+Android 项目在 `android/settings.gradle` 中加入三个源码模块（React Native 封装本身由自动链接处理）：
 
 ```groovy
-allprojects {
-    repositories {
-        maven { url "https://repo.juggle.im/repository/maven-releases/" }
-    }
+def juggleSdk = new File(settingsDir, '../node_modules/juggleim-rnsdk/juggleim-rnsdk/android/native')
+def refresh = new ProcessBuilder('bash', new File(settingsDir, '../node_modules/juggleim-rnsdk/juggleim-rnsdk/scripts/refresh-native-sdk.sh').absolutePath, 'android')
+    .directory(settingsDir).redirectErrorStream(true).start()
+refresh.inputStream.eachLine { println it }
+if (refresh.waitFor() != 0) throw new GradleException('Could not update Android IM SDK')
+['core', 'zego', 'jpush'].each { component ->
+    def moduleName = "juggle-im-${component}"
+    include ":${moduleName}"
+    project(":${moduleName}").projectDir = new File(juggleSdk, component)
 }
 ```
 
-如果 Android 项目使用音视频通话模块，还需要加入：
+Zego 通话模块还需要引擎仓库：
 
 ```groovy
 maven { url "https://storage.zego.im/maven" }
 ```
 
-iOS 项目安装 npm 包后执行：
+iOS 项目在 `ios/Podfile` 的 app target 中指定源码 podspec，再安装依赖：
+
+```ruby
+sdk_refresh = File.expand_path('../node_modules/juggleim-rnsdk/juggleim-rnsdk/scripts/refresh-native-sdk.sh', __dir__)
+raise 'Could not update iOS IM SDK' unless system('bash', sdk_refresh, 'ios')
+
+target 'YourApp' do
+pod 'JuggleIM', :path => '../node_modules/juggleim-rnsdk/juggleim-rnsdk', :modular_headers => true
+pod 'JZegoCall', :path => '../node_modules/juggleim-rnsdk/juggleim-rnsdk'
+end
+```
 
 ```bash
-cd ios
-pod install
+cd ios && pod install
 ```
+
+直接使用 `xcodebuild` 或 Xcode 时，选用包含构建前动作的 Scheme；其他应用需在构建前运行 `pod install`，让 Pods 工程纳入新增的上游文件。每次构建可能使用不同提交；如需复现某次构建，请记录日志中的两个 SDK 提交号。
 
 ## 快速开始
 

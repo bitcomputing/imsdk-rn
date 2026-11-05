@@ -1,0 +1,50 @@
+plugins {
+    id 'com.android.library'
+    id 'com.google.protobuf' version '0.10.0'
+}
+
+def sdkModule = file('../../../native/imsdk-android/JuggleIM')
+
+android {
+    namespace 'com.juggle.im'
+    compileSdk 33
+
+    defaultConfig {
+        minSdk 21
+        consumerProguardFiles sdkModule.toPath().resolve('consumer-rules.pro').toFile()
+    }
+
+    buildFeatures { buildConfig true }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    sourceSets {
+        main {
+            manifest.srcFile file("${sdkModule}/src/main/AndroidManifest.xml")
+            java.srcDirs = [file("${sdkModule}/src/main/java")]
+            res.srcDirs = [file("${sdkModule}/src/main/res")]
+            proto {
+                srcDir file("${sdkModule}/src/main/java/com/juggle/im/internal/proto")
+                include '*.proto'
+            }
+        }
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'org.java-websocket:Java-WebSocket:1.5.5'
+    implementation 'com.google.protobuf:protobuf-javalite:3.18.0'
+    implementation 'com.qiniu:qiniu-android-sdk:8.7.0'
+}
+
+protobuf {
+    protoc { artifact = 'com.google.protobuf:protoc:3.21.7' }
+    generateProtoTasks {
+        all().each { task ->
+            task.builtins { java { option 'lite' } }
+        }
+    }
+}

@@ -1,0 +1,33 @@
+{
+  "name": "juggleim-rnsdk",
+  "version": "1.2.2",
+  "description": "React Native IM SDK",
+  "main": "juggleim-rnsdk/src/index.js",
+  "types": "juggleim-rnsdk/src/index.d.ts",
+  "react-native": "juggleim-rnsdk/src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bitcomputing/imsdk-rn.git"
+  },
+  "files": [
+    "react-native.config.js",
+    "juggleim-rnsdk.podspec",
+    "juggleim-rnsdk/src",
+    "juggleim-rnsdk/ios",
+    "juggleim-rnsdk/android/src",
+    "juggleim-rnsdk/android/build.gradle",
+    "juggleim-rnsdk/android/native/core/build.gradle",
+    "juggleim-rnsdk/android/native/zego/build.gradle",
+    "juggleim-rnsdk/android/native/jpush/build.gradle",
+    "juggleim-rnsdk/scripts",
+    "juggleim-rnsdk/JuggleIM.podspec",
+    "juggleim-rnsdk/JZegoCall.podspec",
+    "juggleim-rnsdk/package.json",
+    "juggleim-rnsdk/README.md"
+  ],
+  "license": "Apache-2.0",
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "react-native": ">=0.60.0"
+  }
+}

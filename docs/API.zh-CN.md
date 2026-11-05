@@ -9,12 +9,10 @@ React Native wrapper for Juggle IM SDK，提供即时通讯功能的React Native
 ## 安装
 
 ```bash
-npm install juggleim-rnsdk --legacy-peer-deps
+npm install 'git+https://github.com/bitcomputing/imsdk-rn.git#main' --legacy-peer-deps
 ```
 
-```
-rn项目中需要在android目录的 gradle 中配置原生依赖：        maven { url "https://repo.juggle.im/repository/maven-releases/" }
-```
+原生源码依赖的 Android `settings.gradle` 和 iOS `Podfile` 配置见[安装说明](../README.zh-CN.md#安装)。
 
 ## 初始化
 

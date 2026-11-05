@@ -25,13 +25,19 @@ class JuggleIM {
    * @param {function} messageClass - 自定义消息类的构造函数
    * @returns {void}
    */
-  static registerCustomMessageType(contentType, messageClass) {
+  static registerCustomMessageType(contentType, messageClass, options) {
     if (contentType.startsWith('jg:')) {
       throw new Error('contentType 不能以 "jg:" 开头');
     }
 
-    // 通知原生层
-    JMI.registerCustomMessageType(contentType);
+    const flag = options
+      ? (options.isCommand ? 1 : 0) |
+        (options.isCount ? 2 : 0) |
+        (options.isStorage ? 8 : 0)
+      : 2 | 8;
+
+    // 通知原生层；未提供 options 时保持 SDK 原有的“计数+存储”语义。
+    JMI.registerCustomMessageType(contentType, flag);
 
     console.log(`已注册自定义消息类型: ${contentType}`);
   }
@@ -144,7 +150,7 @@ class JuggleIM {
     const dbOpenSubscription = juggleIMEmitter.addListener(
       "DbDidOpen",
       (event) => {
-        if (event.key === key) {
+        if (Platform.OS === "ios" || event.key === key) {
           listener("dbOpen", 0, "");
         }
       }
@@ -153,7 +159,7 @@ class JuggleIM {
     const dbCloseSubscription = juggleIMEmitter.addListener(
       "DbDidClose",
       (event) => {
-        if (event.key === key) {
+        if (Platform.OS === "ios" || event.key === key) {
           listener("dbClose", 0, "");
         }
       }

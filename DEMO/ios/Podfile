@@ -1,3 +1,7 @@
+# Fetch the latest source before CocoaPods reads the local SDK podspecs.
+sdk_refresh = File.expand_path('../../juggleim-rnsdk/scripts/refresh-native-sdk.sh', __dir__)
+raise 'Could not update iOS IM SDK from master' unless system('bash', sdk_refresh, 'ios')
+
 # Resolve react_native_pods.rb with node to allow for hoisting
 require Pod::Executable.execute_command('node', ['-p',
   'require.resolve(
@@ -27,6 +31,10 @@ if linkage != nil
 end
 
 target 'DEMO' do
+  # Compile the current bitcomputing SDK sources instead of resolving the published binaries.
+  pod 'JuggleIM', :path => '../../juggleim-rnsdk', :modular_headers => true
+  pod 'JZegoCall', :path => '../../juggleim-rnsdk'
+
   config = use_native_modules!
 
   # Permissions configuration

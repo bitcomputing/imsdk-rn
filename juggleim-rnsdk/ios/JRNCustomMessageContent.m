@@ -27,7 +27,8 @@
   return @"";
 }
 
-+ (Class)registerableClassForContentType:(NSString *)contentType {
++ (Class)registerableClassForContentType:(NSString *)contentType
+                                   flags:(JMessageFlag)flags {
   if (contentType.length == 0) {
     return [JRNCustomMessageContent class];
   }
@@ -61,6 +62,10 @@
   });
   Class meta = object_getClass(cls);
   class_addMethod(meta, @selector(contentType), ctImp, "@@:");
+  IMP flagsImp = imp_implementationWithBlock(^JMessageFlag(id _self) {
+    return flags;
+  });
+  class_addMethod(meta, @selector(flags), flagsImp, "i@:");
 
   objc_registerClassPair(cls);
   return cls;

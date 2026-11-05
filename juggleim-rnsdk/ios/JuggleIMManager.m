@@ -40,7 +40,8 @@ RCT_EXPORT_METHOD(initWithAppKey : (NSString *)appKey) {
 /**
  * 注册自定义消息类型
  */
-RCT_EXPORT_METHOD(registerCustomMessageType : (NSString *)contentType) {
+RCT_EXPORT_METHOD(registerCustomMessageType : (NSString *)contentType
+                  flags : (nonnull NSNumber *)flags) {
   if ([contentType hasPrefix:@"jg:"]) {
     NSLog(@"contentType 不能以 'jg:' 开头");
     return;
@@ -52,7 +53,9 @@ RCT_EXPORT_METHOD(registerCustomMessageType : (NSString *)contentType) {
   //       JMessageProtocol.h registerContentType: 注释），导致 lastMessage
   //       退化为空壳、content.contentType 变为 "jg:unknown"（详情页走 getMessages
   //       不受影响，故仅会话列表显示 unknown；Android SDK 无此限制故正常）。
-  Class cls = [JRNCustomMessageContent registerableClassForContentType:contentType];
+  Class cls = [JRNCustomMessageContent
+      registerableClassForContentType:contentType
+                               flags:(JMessageFlag)flags.intValue];
   [JIM.shared.messageManager registerContentType:cls];
 
   NSLog(@"注册自定义消息类型: %@", contentType);
